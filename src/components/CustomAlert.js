@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 
-const CustomAlert = ({ visible, title, message, onClose }) => {
+const CustomAlert = ({ visible, title, message, onClose, onShare }) => {
   return (
     <Modal isVisible={visible} animationIn="zoomIn" animationOut="zoomOut">
       <View style={styles.container}>
@@ -11,6 +11,9 @@ const CustomAlert = ({ visible, title, message, onClose }) => {
           <Text style={styles.message}>{message}</Text>
           <TouchableOpacity style={styles.button} onPress={onClose}>
             <Text style={styles.buttonText}>OK</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onShare}>
+            <Text style={styles.buttonText}>ShareScore</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -46,6 +49,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     minWidth: 100,
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#FFFFFF",

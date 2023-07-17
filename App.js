@@ -9,9 +9,10 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import { colors, keys, CLEAR, ENTER } from "./src/constants";
+import { colors, keys, CLEAR, ENTER, colorsToEmoji } from "./src/constants";
 import Keyboard from "./src/components/Keyboard";
 import CustomAlert from "./src/components/CustomAlert";
+import * as Clipboard from "expo-clipboard";
 const NUMBER_OF_TRIES = 6;
 
 const copyArray = (arr) => {
@@ -40,6 +41,7 @@ export default function App() {
   const [curCol, setCurCol] = useState(0);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [gameState, setGameState] = useState("playing");
 
   useEffect(() => {
     if (curRow > 0) {
@@ -52,10 +54,12 @@ export default function App() {
       setTitle("Heeeh");
       setMessage("W I N N E R🎉,come everyday");
       setShowAlert(true);
+      setGameState("won");
     } else if (checkIfLose()) {
       setTitle("Eeew");
       setMessage("L O S E R😔,try again tomorrow");
       setShowAlert(true);
+      setGameState("lost");
     }
   };
   const checkIfWin = () => {
@@ -89,6 +93,9 @@ export default function App() {
   //   setRows(updatedRows);
   // };
   const onKeyPressed = (key) => {
+    if (gameState !== "playing") {
+      return;
+    }
     const updatedRows = copyArray(rows);
 
     if (key === CLEAR) {
@@ -120,10 +127,20 @@ export default function App() {
   const isActiveCell = (row, col) => {
     return row === curRow && col === curCol;
   };
-
+  const shareScore = () => {
+    const textMap = rows
+      .map((row, i) =>
+        row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")
+      )
+      .filter((row) => row)
+      .join("\n");
+    const textShare = `Worlde\n${textMap}`;
+    Clipboard.setString(textShare);
+    Alert.alert("copied to clipboard");
+    console.log(textShare);
+  };
   const getCellBGColor = (row, col) => {
     const letter = rows[row][col];
-    console.log(row, curRow);
     if (row >= curRow) {
       return colors.black;
     }
@@ -152,6 +169,7 @@ export default function App() {
         title={title}
         message={message}
         onClose={handleCloseAlert}
+        onShare={shareScore}
       />
       <StatusBar style="light" />
       <Text style={styles.title}>WORLDE</Text>
